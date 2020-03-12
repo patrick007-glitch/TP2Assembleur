@@ -1,0 +1,59 @@
+Bienvenue a ce programme de compte de lettres.
+
+Ce programme compte le nombre de voyelles
+et de consonne dans une chaine de characteres.
+Il indique quelles lettres apparaissent le plus
+souvent et combien de fois elles sont employer.Il
+indique aussi le pourcentage des lettres qui sont
+des voyelles.
+Pour quitter appuyer uniquement sur entree lors de la saisie.
+
+Entrez une chaine de characteres (entree pour terminer):
+
+Avec 3 occurence la voyelle "I" est la plus utilisee,
+par contre, la consonne "C" est utilisee a 2 reprises.
+
+Les voyelles représentent 53,84 % des lettres entrées.
+
+
+Entrez une chaine de characteres (entree pour terminer):
+
+Avec 3 occurence la voyelle "Y" et la consonne "D" sont les plus utilisees.
+
+
+Les voyelles représentent 52,94 % des lettres entrées.
+
+
+Entrez une chaine de characteres (entree pour terminer):
+
+Avec 4 occurence la voyelle "A, E, U" est la plus utilisee,
+par contre, la consonne "N" est utilisee a 3 reprises.
+
+Les voyelles représentent 51,72 % des lettres entrées.
+
+
+Entrez une chaine de characteres (entree pour terminer):
+
+Avec 10 occurence la consonne "R" est la plus utilisee,
+par contre,aucune voyelle n'est utilisee.
+
+Les voyelles représentent 0 % des lettres entrées.
+
+
+Entrez une chaine de characteres (entree pour terminer):
+
+
+Aucune occurence de consonne ou de voyelle
+
+Les voyelles représentent 0 % des lettres entrées.
+
+
+Entrez une chaine de characteres (entree pour terminer):
+
+Avec 1 occurence la voyelle "A, E, I, O, U, Y" et la consonne "B, C, D, F, G, H, J, K, L, M, N, P, Q, R, S, T, V, W, X, Z" sont les plus utilisees.
+
+
+Les voyelles représentent 23,7 % des lettres entrées.
+
+
+Entrez une chaine de characteres (entree pour terminer):

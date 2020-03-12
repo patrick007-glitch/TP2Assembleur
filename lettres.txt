@@ -1,0 +1,655 @@
+
+;***************************************************************
+
+; Programme: lettres.txt
+
+; Version1: Calcul la consonne et la voyelle la plus
+; utilisee dans une chaine de caractere saisi par l'utilisateur
+; ainsi que son nombre d'occurence.
+; Le programme affiche egalement le pourcentage de lettre qui
+; sont des voyelle.
+
+; Auteurs: Jean-Michel Landry, Patrick Chalifour
+; Codes permanents : LANJ09049206, CHAP03089503
+; Courriel: kj191048@ens.uqam.ca, dj991063@ens.uqam.ca
+; date: 24 Mars 2020
+; cours: INF2171
+;*************************************************************
+
+
+CALL bonjour 
+
+debut: CALL question 
+
+CALL saisi 
+
+CALL compteV
+
+CALL resultat
+
+CALL pourCt
+
+CALL reset 
+
+BR debut
+
+
+;
+; affiche le message de bienvenu et le fonctionnement du programme.
+;
+bonjour: STRO bienvenu,d 
+STRO manuel,d 
+
+RET0 
+
+;
+; Reinitialise les valeurs de alphab et autres
+; variables a 0
+reset: LDA 0,i 
+LDX 0,i
+STA compte,d
+STA occuVo,d
+STA occuTo,d
+STA pcVoy,d
+STA frVoy,d
+STA occmaxvo,d 
+STA occmaxco,d 
+STA nbrvoaff,d
+STA nbrcoaff,d
+STA position,d
+retalpha: STA alphab,x
+ADDX 2,i
+CPX 26,i
+BREQ ret
+BR retalpha
+
+ret: RET0
+
+;
+; sous programme qui cherche le plus 
+; grand nombre d'occurence de voyelle
+;
+cherche: LDX 0,i 
+LDBYTEA alphab,x ; lettre a
+CPA occmaxvo,d
+BRGT store 
+ADDX 4,i         ; lettre e 
+LDBYTEA alphab,x 
+CPA occmaxvo,d 
+BRGT store
+ 
+ADDX 4,i         ; lettre i
+LDBYTEA alphab,x 
+CPA occmaxvo,d 
+BRGT store
+ 
+ADDX 6,i         ;lettre o
+LDBYTEA alphab,x 
+CPA occmaxvo,d 
+BRGT store 
+ADDX 6,i         ; lettre u
+LDBYTEA alphab,x 
+CPA occmaxvo,d 
+BRGT store
+ADDX 4,i         ; lettre y
+LDBYTEA alphab,x 
+CPA occmaxvo,d 
+BRGT store 
+BR terminer
+
+store: STA occmaxvo,d 
+BR cherche
+
+terminer: RET0 
+
+
+;
+; Sous programme qui cherche le plus grand
+; nombre d'occurence de consonne
+;
+cherche2: LDX position,d
+ADDX 1,i
+CPX 26,i
+BREQ retcher2 
+LDA 0,i
+LDBYTEA alphab,x
+CPA occmaxco,d 
+STX position,d
+BRLE cherche2
+BR plusgrad
+
+
+plusgrad: ADDX 0x0041,i 
+CPX "A",i
+BREQ cherche2
+CPX "E",i
+BREQ cherche2
+CPX "I",i
+BREQ cherche2
+CPX "O",i
+BREQ cherche2
+CPX "U",i
+BREQ cherche2
+CPX "Y",i
+BREQ cherche2
+STA occmaxco,d 
+BR cherche2
+
+
+
+retcher2: RET0
+
+
+;
+; affiche la demande de saisie a l'utilisateur.
+;
+question:STRO demande,d 
+
+RET0 
+
+
+;
+; Sous programme qui saisi une chaine de caractere
+; entrez par l'usager et compte le nombre d'occurence
+; de chaque lettre.
+;
+
+saisi: LDX 0,i 
+LDA 0,i 
+
+boucle: CHARI chaine,x  ; lecture d'un caractère de chaine 
+LDBYTEX chaine,x    ; charge le caractère lu
+LDA compte,d
+ADDA    1,i         ; position suivante
+STA   compte,d
+CPX     "\n",i      ; dernier caractère ?
+BREQ    finchain    ; oui, c'est terminé             
+ANDX 0x00DF,i 
+CPX 'A',i 
+BRLT boucle
+CPX 'Z',i 
+BRGT boucle
+LDA occuTo,d 
+ADDA 1,i
+STA occuTo,d 
+SUBX 0x0041,i 
+LDBYTEA alphab,x 
+ADDA 1,i 
+STBYTEA alphab,x
+BR boucle 
+
+finchain: CPA  1,i  ; est-ce que le caractère ENTREE est le premier caractère lu        
+BREQ    fin        
+       
+LDA     0,i         ; insérons le délimiteur de fin   
+STBYTEA chaine,x    ; de ligne
+
+retour: RET0 
+
+
+
+;
+;Sous-Programme comptant le nombre de voyelle
+;
+
+compteV: LDX 0,i 
+STX occuVo,d 
+LDBYTEA alphab,x 
+STA occuVo,d 
+ADDX 4,i 
+LDBYTEA alphab,x 
+ADDA occuVo,d 
+STA occuVo,d 
+ADDX 4,i 
+LDBYTEA alphab,x 
+ADDA occuVo,d 
+STA occuVo,d 
+ADDX 6,i 
+LDBYTEA alphab,x 
+ADDA occuVo,d 
+STA occuVo,d 
+ADDX 6,i 
+LDBYTEA alphab,x 
+ADDA occuVo,d 
+STA occuVo,d 
+ADDX 4,i 
+LDBYTEA alphab,x 
+ADDA occuVo,d 
+STA occuVo,d 
+CHARO '\n',i 
+
+RET0 
+
+
+;
+;mult100: multiplie nombre par cent
+;IN: A= nombre a multiplier
+;variables locales
+;
+
+mul4: .EQUATE 0 
+mul32: .EQUATE 2 
+mult100: SUBSP 4,i ;WARNING: Number of bytes allocated (4) not equal to number of bytes listed in trace tag (0).
+ASLA ;*2
+ASLA ;*4
+STA mul4,s 
+ASLA ; *8
+ASLA ; *16
+ASLA ; *32
+STA mul32,s 
+ASLA ;*64
+ADDA mul4,s ; *68
+ADDA mul32,s ; * 100
+ADDSP 4,i ;WARNING: Number of bytes deallocated (4) not equal to number of bytes listed in trace tag (0).
+RET0 
+
+
+;
+;divise: divise nombre donner en argument A par X
+;In A = dividende
+; X = diviseur
+;OUT A = reste
+; X = quotient
+;Variables locales
+
+diviser: .EQUATE 0 
+divise: SUBSP 2,i ;allouer espace variables locales ;WARNING: Number of bytes allocated (2) not equal to number of bytes listed in trace tag (0).
+STX diviser,s 
+LDX 0,i 
+soustr: ADDX 1,i 
+SUBA diviser,s 
+BRGE soustr 
+SUBX 1,i 
+ADDA diviser,s 
+ADDSP 2,i ;WARNING: Number of bytes deallocated (2) not equal to number of bytes listed in trace tag (0).
+RET0 
+
+
+;
+; Sous programme qui affiche les consonnes
+; qui aparaissent le plus souvent
+;
+affconso: LDX 0,i
+STX nbrcoaff,d 
+STX compte,d
+STX position,d
+LDA 0,i 
+CHARO "\"",i
+
+continue:  LDX position,d
+ADDX 1,i ;lettre b puis c et ainsi de suite jusqua z
+CPX 26,i
+BREQ affterm
+LDBYTEA alphab,x
+CPA occmaxco,d 
+STX position,d
+BREQ affiche
+BR continue
+
+affiche: ADDX 0x0041,i 
+CPX "A",i
+BREQ continue
+CPX "E",i
+BREQ continue
+CPX "I",i
+BREQ continue
+CPX "O",i
+BREQ continue
+CPX "U",i
+BREQ continue
+CPX "Y",i
+BREQ continue
+STBYTEX compte,d
+LDA nbrcoaff,d
+ADDA 1,i
+STA nbrcoaff,d
+CPA 1,i
+BRLE pasvirg
+CHARO ",",i       
+CHARO " ",i
+pasvirg: CHARO compte,d   ;on affiche car c'est une consonne 
+BR continue
+
+affterm: CHARO "\"",i
+
+RET0
+
+
+;
+; Sous programme qui affiche les voyelles 
+; qui aparaissent le plus souvent
+;
+affvoy: LDX 0,i ;lettre a
+LDA 0,i
+STX compte,d
+CHARO "\"",i
+LDBYTEA alphab,x 
+CPA occmaxvo,d 
+BRLT next1
+LDA nbrvoaff,d 
+ADDA 1,i
+STA nbrvoaff,d
+ADDX 0x0041,i
+STBYTEX compte,d 
+CHARO compte,d
+
+next1: LDX 4,i ; lettre e
+LDBYTEA alphab,x
+CPA occmaxvo,d 
+BRLT next2
+LDA nbrvoaff,d
+ADDA 1,i
+STA nbrvoaff,d
+CPA 1,i
+BRLE pasvir
+CHARO ",",i       
+CHARO " ",i
+pasvir:ADDX 0x0041,i
+STBYTEX compte,d 
+CHARO compte,d 
+
+
+next2: LDX 8,i         ; lettre i
+LDBYTEA alphab,x 
+CPA occmaxvo,d
+BRLT next3
+LDA nbrvoaff,d
+ADDA 1,i
+STA nbrvoaff,d
+CPA 1,i
+BRLE pasvi
+CHARO ",",i       
+CHARO " ",i
+pasvi:ADDX 0x0041,i 
+STBYTEX compte,d 
+CHARO compte,d 
+
+next3: LDX 14,i         ; lettre o
+LDBYTEA alphab,x 
+CPA occmaxvo,d
+BRLT next4
+LDA nbrvoaff,d
+ADDA 1,i
+STA nbrvoaff,d
+CPA 1,i
+BRLE pasv
+CHARO ",",i       
+CHARO " ",i
+pasv:ADDX 0x0041,i
+STBYTEX compte,d 
+CHARO compte,d 
+
+next4: LDX 20,i         ; lettre u
+LDBYTEA alphab,x 
+CPA occmaxvo,d
+BRLT next5
+LDA nbrvoaff,d
+ADDA 1,i
+STA nbrvoaff,d
+CPA 1,i
+BRLE psvir
+CHARO ",",i       
+CHARO " ",i
+psvir:ADDX 0x0041,i
+STBYTEX compte,d 
+CHARO compte,d 
+
+next5: LDX 24,i         ; lettre y
+LDBYTEA alphab,x 
+CPA occmaxvo,d
+BRLT next6
+LDA nbrvoaff,d
+ADDA 1,i
+STA nbrvoaff,d
+CPA 1,i
+BRLE psvirg
+CHARO ",",i       
+CHARO " ",i
+psvirg: ADDX 0x0041,i 
+STBYTEX compte,d 
+CHARO compte,d 
+
+
+
+next6: CHARO "\"",i 
+RET0
+
+;
+;POURCENTAGE*******************
+;Sousprogramme d'affichage du pourcentage
+;de voyelle
+;
+
+pourCt: LDX 0,i
+STX pcVoy,d
+LDA 0,i
+LDX occuTo,d 
+CPX 0,i
+BREQ pasFrac
+LDA occuVo,d 
+CALL mult100 
+LDX occuTo,d 
+CALL divise 
+STX pcVoy,d
+CPA 0,i
+BREQ pasFrac 
+CALL mult100 
+LDX occuTo,d 
+CALL divise 
+STX frVoy,d 
+STRO pct1,d 
+DECO pcVoy,d 
+CHARO ',',i 
+DECO frVoy,d 
+STRO pct2,d
+BR finPc 
+pasFrac: STRO pct1,d 
+DECO pcVoy,d
+STRO pct2,d
+finPc: CHARO '\n',i 
+
+RET0 
+
+;
+; Sous programme qui affiche les resultat
+;
+resultat: CALL cherche
+CALL cherche2
+LDA 0,i
+LDX 0,i
+CPX occuTo,d 
+BREQ messaucu
+STRO avec,d
+CPX occmaxvo,d
+BREQ aucunvoy 
+DECO occmaxvo,d
+LDX 1,i
+CPX occmaxvo,i
+STRO occurenc,d
+BRLE pasdes
+CHARO "s",i
+pasdes: LDA occmaxvo,d 
+CPA occmaxco,d 
+BREQ messegal
+
+BR message1
+
+
+
+RET0
+
+;
+;Affiche un message pour une chaine qui contient un nombre
+;egal d'occurence de consonne et de voyelle et contient plus
+;d'une occurence.
+;
+messegal: LDA nbrvoaff,d
+CPA 1,i 
+BRLE lavoy
+BR lesvoy 
+lavoy: STRO messvoy,d
+BR affichag 
+lesvoy: STRO messvoys,d 
+affichag:CALL affvoy
+CHARO " ",i
+CHARO "e",i
+CHARO "t",i
+LDA nbrcoaff,d
+CPA 1,i
+BRLE conpass
+STRO consonns,d
+BR affic
+conpass: STRO consonne,d 
+
+affic: CALL affconso
+STRO mesutils,d 
+CHARO ".",i
+CHARO "\n",i
+
+
+RET0
+;
+; affiche un message pour une chaine qui a des consonnes
+; mais pas de voyelle.
+;
+aucunvoy: DECO occmaxco,d 
+STRO occurenc,d
+LDX 1,i
+CPX occmaxco,d
+BRLE pasdess
+CHARO "s",i
+pasdess: STRO consonne,d 
+CALL affconso
+STRO mesutil,d
+STRO pasvoy,d
+
+
+RET0
+;
+; affiche un message pour aucune consonne et voyelle.
+;
+messaucu: STRO messrien,d
+
+RET0
+
+
+;
+; message lorsqu'il y a plus de voyelles que de consonnes
+;
+message1: LDA nbrvoaff,d
+CPA 1,i 
+BRLE lavo
+BR lesvoys 
+lavo: STRO messvoy,d 
+BR afficha 
+lesvoys: STRO messvoys,d 
+afficha:CALL affvoy 
+CPA 1,i 
+BRLE lav
+BR lesvo
+lav: STRO mesutil,d 
+BR parcon 
+lesvo: STRO mesutils,d 
+parcon: STRO consonne,d 
+CALL affconso  
+STRO estutil,d
+DECO occmaxco,d 
+STRO reprises,d
+
+RET0
+
+
+
+;
+;Sous-Proramme d'affichage de fin
+;affiche le message de fin et termine le programme
+;
+
+fin: STRO final,d 
+
+STOP 
+
+
+
+
+bienvenu:.ASCII "Bienvenue a ce programme de compte de lettres.\x00"
+
+manuel: .ASCII "\n\nCe programme compte le nombre de voyelles"
+
+.ASCII "\net de consonne dans une chaine de characteres."
+
+.ASCII "\nIl indique quelles lettres apparaissent le plus"
+
+.ASCII "\nsouvent et combien de fois elles sont employer.Il"
+
+.ASCII "\nindique aussi le pourcentage des lettres qui sont"
+
+.ASCII "\ndes voyelles."
+
+.ASCII "\nPour quitter appuyer uniquement sur entree lors de la saisie.\x00"
+
+demande: .ASCII "\n\nEntrez une chaine de characteres (entree pour terminer):\n\x00"
+
+avec:.ASCII "Avec \x00" 
+
+occurenc: .ASCII " occurence\x00"
+
+messvoy: .ASCII " la voyelle \x00"
+
+messvoys: .ASCII ", les voyelles \x00"
+
+consonne:.ASCII " la consonne \x00" 
+
+consonns: .ASCII " les consonnes \x00"
+
+mesutil: .ASCII " est la plus utilisee,\npar contre,\x00"
+
+mesutils: .ASCII " sont les plus utilisees\x00"
+
+parcontr: .ASCII ",\npar contre, \x00"
+
+pasvoy: .ASCII "aucune voyelle n'est utilisee.\x00"
+
+estutil: .ASCII " est utilisee a \x00"
+
+reprises: .ASCII " reprises.\x00"
+
+messrien: .ASCII "\nAucune occurence de consonne ou de voyelle\x00" 
+
+final: .ASCII "\n\nFin normal du programme\x00"
+
+pct1: .ASCII "\n\nLes voyelles représentent \x00"
+
+pct2: .ASCII " % des lettres entrées.\x00"
+
+
+;
+;Nombre total de voyelle et pourcentages
+;
+occuVo: .BLOCK 2 ;#2d 
+
+occuTo: .BLOCK 2 ;#2d 
+
+pcVoy: .BLOCK 2 ;#2d 
+
+frVoy: .BLOCK 2 ;#2d 
+
+compte: .BLOCK 2 ;#2d 
+
+occmaxvo: .BLOCK 2;#2d
+
+nbrvoaff: .BLOCK 2
+
+nbrcoaff: .BLOCK 2
+
+occmaxco: .BLOCK 2;#2d
+
+position: .BLOCK 2;#2d
+
+alphab: .BLOCK 26
+
+chaine: .BLOCK 10 
+
+.BLOCK 0 ; le reste de la chaine 
+
+.END 
